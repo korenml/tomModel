@@ -170,6 +170,16 @@ kEpsilonPANSdyn<BasicTurbulenceModel>::kEpsilonPANSdyn
         )
     ),
 
+    fkLow_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "fkLow",
+            this->coeffDict_,
+            0.1
+        )
+    ),
+
     delta_
     (
         LESdelta::New
@@ -184,14 +194,14 @@ kEpsilonPANSdyn<BasicTurbulenceModel>::kEpsilonPANSdyn
     (
         IOobject
         (
-            IOobject::groupName("fk_", alphaRhoPhi.group()),
+            IOobject::groupName("fk", alphaRhoPhi.group()),
             this->runTime_.timeName(),
             this->mesh_,
             IOobject::MUST_READ,
             IOobject::AUTO_WRITE
         ),
         this->mesh_,
-        dimensionedScalar("quarter", 0.25)
+        dimensionedScalar("low", fkLow_)
     ),
 
     k_
@@ -288,6 +298,7 @@ bool kEpsilonPANSdyn<BasicTurbulenceModel>::read()
         sigmak_.readIfPresent(this->coeffDict());
         sigmaEps_.readIfPresent(this->coeffDict());
 		fEpsilon_.readIfPresent(this->coeffDict());
+		fkLow_.readIfPresent(this->coeffDict());
 
         return true;
     }
@@ -376,11 +387,11 @@ void kEpsilonPANSdyn<BasicTurbulenceModel>::correct()
     fvOptions.correct(kU_);
     bound(kU_, min(fk_)*this->kMin_);
 
-	k_ = kU_/fk_;
-	k_.correctBoundaryConditions();
+	this->k_ = kU_/fk_;
+	this->k_.correctBoundaryConditions();
 
-	epsilon_ = epsilonU_/fEpsilon_;
-	epsilon_.correctBoundaryConditions();
+	this->epsilon_ = epsilonU_/fEpsilon_;
+	this->epsilon_.correctBoundaryConditions();
 
     correctNut();
 
@@ -390,7 +401,7 @@ void kEpsilonPANSdyn<BasicTurbulenceModel>::correct()
 	//dynamic fk_
 	fk_.primitiveFieldRef() = min
 	(
-							max((1.0/(sqrt(Cmu_))*pow(delta()/Lt,2.0/3.0)), 0.0),
+							max((1.0/(sqrt(Cmu_))*pow(delta()/Lt,2.0/3.0)), fkLow_),
 							1.0
 	);
 

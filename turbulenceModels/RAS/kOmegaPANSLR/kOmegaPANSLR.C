@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "kOmegaPANSdyn.H"
+#include "kOmegaPANSLR.H"
 #include "fvOptions.H"
 #include "bound.H"
 
@@ -37,7 +37,7 @@ namespace RASModels
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-void kOmegaPANSdyn<BasicTurbulenceModel>::correctNut()
+void kOmegaPANSLR<BasicTurbulenceModel>::correctNut()
 {
     this->nut_ = kU_/omegaU_;
     this->nut_.correctBoundaryConditions();
@@ -50,7 +50,7 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correctNut()
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
+kOmegaPANSLR<BasicTurbulenceModel>::kOmegaPANSLR
 (
     const alphaField& alpha,
     const rhoField& rho,
@@ -120,6 +120,15 @@ kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
         )
     ),
 
+	fk_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "fk",
+            this->coeffDict_,
+            0.25
+        )
+    ),
 	fEpsilon_
     (
         dimensioned<scalar>::lookupOrAddToDict
@@ -129,53 +138,14 @@ kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
             1.0
         )
     ),
-
-	fkLow_
+	fOmega_
     (
         dimensioned<scalar>::lookupOrAddToDict
         (
-            "fkLow",
+            "fOmega",
             this->coeffDict_,
-            0.1
+            4.0
         )
-    ),
-
-
-	delta_
-	(
-		LESdelta::New
-		(
-			IOobject::groupName("delta", U.group()),
-			*this,
-			this->coeffDict_
-		)
-	),
-
-    fk_
-    (
-        IOobject
-        (
-            IOobject::groupName("fk", alphaRhoPhi.group()),
-            this->runTime_.timeName(),
-            this->mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-		this->mesh_,
-        dimensionedScalar("zero", fkLow_)
-    ),
-
-    fOmega_
-    (
-        IOobject
-        (
-            IOobject::groupName("fOmega", alphaRhoPhi.group()),
-            this->runTime_.timeName(),
-            this->mesh_,
-            IOobject::NO_READ,
-            IOobject::AUTO_WRITE
-        ),
-		fEpsilon_/fk_
     ),
 
     k_
@@ -231,11 +201,12 @@ kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
 
 {
 	
+	fOmega_ = fEpsilon_/fk_;
     bound(k_, this->kMin_);
     bound(omega_, this->omegaMin_);
 
-    bound(kU_, min(fk_)*this->kMin_);
-    bound(omegaU_, min(fOmega_)*this->omegaMin_);
+    bound(kU_, fk_*this->kMin_);
+    bound(omegaU_, fOmega_*this->omegaMin_);
 
     if (type == typeName)
     {
@@ -248,7 +219,7 @@ kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-bool kOmegaPANSdyn<BasicTurbulenceModel>::read()
+bool kOmegaPANSLR<BasicTurbulenceModel>::read()
 {
     if (eddyViscosity<RASModel<BasicTurbulenceModel>>::read())
     {
@@ -257,8 +228,9 @@ bool kOmegaPANSdyn<BasicTurbulenceModel>::read()
         gamma_.readIfPresent(this->coeffDict());
         alphaK_.readIfPresent(this->coeffDict());
         alphaOmega_.readIfPresent(this->coeffDict());
+		fk_.readIfPresent(this->coeffDict());
 		fEpsilon_.readIfPresent(this->coeffDict());
-		fkLow_.readIfPresent(this->coeffDict());
+		fOmega_.readIfPresent(this->coeffDict());
 
         return true;
     }
@@ -270,7 +242,7 @@ bool kOmegaPANSdyn<BasicTurbulenceModel>::read()
 
 
 template<class BasicTurbulenceModel>
-void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
+void kOmegaPANSLR<BasicTurbulenceModel>::correct()
 {
     if (!this->turbulence_)
     {
@@ -312,8 +284,7 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
       - fvm::SuSp(((2.0/3.0)*gamma_)*alpha*rho*divU, omegaU_)
       - fvm::Sp
 		(
-			(gamma_*Cmu_ - gamma_*Cmu_/fOmega_ + beta_/fOmega_)*alpha*rho*omegaU_,
-			omegaU_
+			(gamma_*Cmu_ - gamma_*Cmu_/fOmega_ + beta_/fOmega_)*alpha*rho*omegaU_, omegaU_
 		)
 
       + fvOptions(alpha, rho, omegaU_)
@@ -324,7 +295,7 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
     omegaUEqn.ref().boundaryManipulate(omegaU_.boundaryFieldRef());
     solve(omegaUEqn);
     fvOptions.correct(omegaU_);
-    bound(omegaU_, min(fOmega_)*this->omegaMin_);
+    bound(omegaU_, fOmega_*this->omegaMin_);
 
 
     // Turbulent kinetic energy equation
@@ -344,7 +315,7 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
     fvOptions.constrain(kUEqn.ref());
     solve(kUEqn);
     fvOptions.correct(kU_);
-    bound(kU_, min(fk_)*this->kMin_);
+    bound(kU_, fk_*this->kMin_);
 
 	this->k_ = kU_/fk_;
 	this->k_.correctBoundaryConditions();
@@ -353,16 +324,6 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
 	this->omega_.correctBoundaryConditions();
 
     correctNut();
-
-	volScalarField Lt(sqrt(k_)/(Cmu_*omega_));
-
-	fk_.primitiveFieldRef() = min
-	(
-		max((1.0/sqrt(Cmu_))*pow(delta()/Lt, 2.0/3.0), fkLow_),
-		1.0
-	);
-	fOmega_ = fEpsilon_/fk_;
-
 }
 
 

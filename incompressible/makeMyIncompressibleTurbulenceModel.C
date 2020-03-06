@@ -71,11 +71,24 @@ makeRASModel(kEpsilonPANSLR);
 #include "kEpsilonPANSdyn.H"
 makeRASModel(kEpsilonPANSdyn);
 
+#include "kEpsilonPANSvar1.H"
+makeRASModel(kEpsilonPANSvar1);
+
 #include "kOmegaPANS.H"
 makeRASModel(kOmegaPANS);
 
+#include "kOmegaPANSLR.H"
+makeRASModel(kOmegaPANSLR);
+
 #include "kOmegaPANSdyn.H"
 makeRASModel(kOmegaPANSdyn);
+
+#include "kOmegaPANSdynFY.H"
+makeRASModel(kOmegaPANSdynFY);
+
+#include "kOmegaPANSvar1.H"
+makeRASModel(kOmegaPANSvar1);
+
 
 #include "kOmegaTNTPANS.H"
 makeRASModel(kOmegaTNTPANS);

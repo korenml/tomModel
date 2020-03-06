@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::RASModels::kOmegaPANS
+    Foam::RASModels::kOmegaPANSdyn
 
 Description
     Standard high Reynolds-number k-omega turbulence model for
@@ -39,7 +39,7 @@ Description
 
     The default model coefficients are
     \verbatim
-        kOmegaPANSCoeffs
+        kOmegaPANSdynCoeffs
         {
             Cmu         0.09;  // Equivalent to betaStar
             alpha       0.52;
@@ -50,12 +50,12 @@ Description
     \endverbatim
 
 SourceFiles
-    kOmegaPANS.C
+    kOmegaPANSdyn.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef kOmegaPANS_H
-#define kOmegaPANS_H
+#ifndef kOmegaPANSdyn_H
+#define kOmegaPANSdyn_H
 
 #include "RASModel.H"
 #include "eddyViscosity.H"
@@ -69,11 +69,11 @@ namespace RASModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class kOmegaPANS Declaration
+                           Class kOmegaPANSdyn Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class BasicTurbulenceModel>
-class kOmegaPANS
+class kOmegaPANSdyn
 :
     public eddyViscosity<RASModel<BasicTurbulenceModel>>
 {
@@ -90,17 +90,18 @@ protected:
             dimensionedScalar alphaK_;
             dimensionedScalar alphaOmega_;
 			dimensionedScalar fEpsilon_;
+			dimensionedScalar fkLow_;
 
 
 
 			autoPtr<Foam::LESdelta> delta_;
 
         // Fields
-
-            volScalarField k_;
-            volScalarField kU_;
 			volScalarField fk_;
 			volScalarField fOmega_;
+            volScalarField k_;
+            volScalarField kU_;
+
             volScalarField omega_;
             volScalarField omegaU_;
 
@@ -118,13 +119,13 @@ public:
 
 
     //- Runtime type information
-    TypeName("kOmegaPANS");
+    TypeName("kOmegaPANSdyn");
 
 
     // Constructors
 
         //- Construct from components
-        kOmegaPANS
+        kOmegaPANSdyn
         (
             const alphaField& alpha,
             const rhoField& rho,
@@ -138,7 +139,7 @@ public:
 
 
     //- Destructor
-    virtual ~kOmegaPANS()
+    virtual ~kOmegaPANSdyn()
     {}
 
 
@@ -265,7 +266,7 @@ public:
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 #ifdef NoRepository
-    #include "kOmegaPANS.C"
+    #include "kOmegaPANSdyn.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

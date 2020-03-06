@@ -2,8 +2,12 @@ EXE_INC = \
 	-I../turbulenceModels/RAS/kEpsilonPANSHR \
 	-I../turbulenceModels/RAS/kEpsilonPANSLR \
 	-I../turbulenceModels/RAS/kEpsilonPANSdyn \
+	-I../turbulenceModels/RAS/kEpsilonPANSvar1 \
 	-I../turbulenceModels/RAS/kOmegaPANS \
+	-I../turbulenceModels/RAS/kOmegaPANSLR \
 	-I../turbulenceModels/RAS/kOmegaPANSdyn \
+	-I../turbulenceModels/RAS/kOmegaPANSdynFY \
+	-I../turbulenceModels/RAS/kOmegaPANSvar1 \
 	-I../turbulenceModels/RAS/kOmegaTNTPANS \
 	-I../turbulenceModels/RAS/kOmegaTNTPANSdyn \
 	-I../turbulenceModels/RAS/kOmegaTNTPANSSSV \

@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "kOmegaPANSdyn.H"
+#include "kOmegaPANSdynFY.H"
 #include "fvOptions.H"
 #include "bound.H"
 
@@ -37,7 +37,7 @@ namespace RASModels
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-void kOmegaPANSdyn<BasicTurbulenceModel>::correctNut()
+void kOmegaPANSdynFY<BasicTurbulenceModel>::correctNut()
 {
     this->nut_ = kU_/omegaU_;
     this->nut_.correctBoundaryConditions();
@@ -50,7 +50,7 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correctNut()
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
+kOmegaPANSdynFY<BasicTurbulenceModel>::kOmegaPANSdynFY
 (
     const alphaField& alpha,
     const rhoField& rho,
@@ -248,7 +248,7 @@ kOmegaPANSdyn<BasicTurbulenceModel>::kOmegaPANSdyn
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-bool kOmegaPANSdyn<BasicTurbulenceModel>::read()
+bool kOmegaPANSdynFY<BasicTurbulenceModel>::read()
 {
     if (eddyViscosity<RASModel<BasicTurbulenceModel>>::read())
     {
@@ -270,7 +270,7 @@ bool kOmegaPANSdyn<BasicTurbulenceModel>::read()
 
 
 template<class BasicTurbulenceModel>
-void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
+void kOmegaPANSdynFY<BasicTurbulenceModel>::correct()
 {
     if (!this->turbulence_)
     {
@@ -356,11 +356,11 @@ void kOmegaPANSdyn<BasicTurbulenceModel>::correct()
 
 	volScalarField Lt(sqrt(k_)/(Cmu_*omega_));
 
-	fk_.primitiveFieldRef() = min
-	(
-		max((1.0/sqrt(Cmu_))*pow(delta()/Lt, 2.0/3.0), fkLow_),
-		1.0
+	fk_.primitiveFieldRef() = max(
+	1.0 - pow( (pow(Lt/delta(), 2.0/3.0))/(0.23 + pow(Lt/delta(), 2.0/3.0)), 4.5),
+	fkLow_	
 	);
+
 	fOmega_ = fEpsilon_/fk_;
 
 }

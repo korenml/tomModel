@@ -22,50 +22,40 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::RASModels::kEpsilonPANSdyn
+    Foam::RASModels::kOmegaPANSLR
 
 Description
-    PANS k-epsilon turbulence model for incompressible and compressible
-    flows including rapid distortion theory (RDT) based compression term.
+    Standard high Reynolds-number k-omega turbulence model for
+    incompressible and compressible flows in PANS form.
 
-    Reference:
+    References:
     \verbatim
-        Standard model:
-            Launder, B. E., & Spalding, D. B. (1972).
-            Lectures in mathematical models of turbulence.
+        Wilcox, D. C. (1998).
+        Turbulence modeling for CFD
+        (Vol. 2, pp. 103-217). La Canada, CA: DCW industries.
 
-            Launder, B. E., & Spalding, D. B. (1974).
-            The numerical computation of turbulent flows.
-            Computer methods in applied mechanics and engineering,
-            3(2), 269-289.
-
-			Girimaji, S. S. (2006).
-            Partially-averaged Navier-Stokes method for turbulence: A Reynolds
-            averaged Navier-Stokes to direct numerical simulation bridging
-            method.
-            Journal of Applied Mechanics, Vol 73, 413-421.
+		
     \endverbatim
 
     The default model coefficients are
     \verbatim
-        kEpsilonPANSdynCoeffs
+        kOmegaPANSLRCoeffs
         {
-            Cmu         0.09;
-            C1          1.44;
-            C2          1.92;
-            C3          -0.33;
-            sigmak      1.0;
-            sigmaEps    1.3;
+            Cmu         0.09;  // Equivalent to betaStar
+            alpha       0.52;
+            beta        0.072;
+            alphak      0.5;
+            alphaOmega  0.5;
         }
     \endverbatim
 
 SourceFiles
-    kEpsilonPANSdyn.C
+    kOmegaPANSLR.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef kEpsilonPANSdyn_H
-#define kEpsilonPANSdyn_H
+#ifndef kOmegaPANSLR_H
+#define kOmegaPANSLR_H
 
 #include "RASModel.H"
 #include "eddyViscosity.H"
@@ -78,20 +68,14 @@ namespace RASModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class kEpsilonPANSdyn Declaration
+                           Class kOmegaPANSLR Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class BasicTurbulenceModel>
-class kEpsilonPANSdyn
+class kOmegaPANSLR
 :
     public eddyViscosity<RASModel<BasicTurbulenceModel>>
 {
-    // Private Member Functions
-
-        // Disallow default bitwise copy construct and assignment
-        kEpsilonPANSdyn(const kEpsilonPANSdyn&);
-        void operator=(const kEpsilonPANSdyn&);
-
 
 protected:
 
@@ -100,32 +84,26 @@ protected:
         // Model coefficients
 
             dimensionedScalar Cmu_;
-            dimensionedScalar C1_;
-            dimensionedScalar C2_;
-            dimensionedScalar C3_;
-            dimensionedScalar sigmak_;
-            dimensionedScalar sigmaEps_;
+            dimensionedScalar beta_;
+            dimensionedScalar gamma_;
+            dimensionedScalar alphaK_;
+            dimensionedScalar alphaOmega_;
+			dimensionedScalar fk_;
 			dimensionedScalar fEpsilon_;
-			dimensionedScalar fkLow_;
+			dimensionedScalar fOmega_;
+
 
         // Fields
 
-            autoPtr<Foam::LESdelta> delta_;
-			volScalarField fk_;
-
             volScalarField k_;
             volScalarField kU_;
-
-            volScalarField C2U_;
-            volScalarField epsilon_;
-            volScalarField epsilonU_;
+            volScalarField omega_;
+            volScalarField omegaU_;
 
 
     // Protected Member Functions
 
         virtual void correctNut();
-        virtual tmp<fvScalarMatrix> kSource() const;
-        virtual tmp<fvScalarMatrix> epsilonSource() const;
 
 
 public:
@@ -136,13 +114,13 @@ public:
 
 
     //- Runtime type information
-    TypeName("kEpsilonPANSdyn");
+    TypeName("kOmegaPANSLR");
 
 
     // Constructors
 
         //- Construct from components
-        kEpsilonPANSdyn
+        kOmegaPANSLR
         (
             const alphaField& alpha,
             const rhoField& rho,
@@ -156,20 +134,14 @@ public:
 
 
     //- Destructor
-    virtual ~kEpsilonPANSdyn()
+    virtual ~kOmegaPANSLR()
     {}
 
 
     // Member Functions
 
-        //- Re-read model coefficients if they have changed
+        //- Read RASProperties dictionary
         virtual bool read();
-
-        //- The filter width
-        inline const volScalarField& delta() const
-        {
-            return delta_();
-        }
 
         //- Return the effective diffusivity for k
         tmp<volScalarField> DkEff() const
@@ -179,20 +151,20 @@ public:
                 new volScalarField
                 (
                     "DkEff",
-                    (this->nut_/(sigmak_*fk_*fk_/fEpsilon_) + this->nu())
+                    alphaK_*this->nut_ + this->nu()
                 )
             );
         }
 
-        //- Return the effective diffusivity for epsilon
-        tmp<volScalarField> DepsilonEff() const
+        //- Return the effective diffusivity for omega
+        tmp<volScalarField> DomegaEff() const
         {
             return tmp<volScalarField>
             (
                 new volScalarField
                 (
-                    "DepsilonEff",
-                    (this->nut_/(sigmaEps_*fk_*fk_/fEpsilon_) + this->nu())
+                    "DomegaEff",
+                    alphaOmega_*this->nut_ + this->nu()
                 )
             );
         }
@@ -209,17 +181,55 @@ public:
             return kU_;
         }
 
+        //- Return the turbulence specific dissipation rate
+        virtual tmp<volScalarField> omega() const
+        {
+            return omega_;
+        }
+
+        //- Return the unresolved turbulence specific dissipation rate
+        virtual tmp<volScalarField> omegaU() const
+        {
+            return omegaU_;
+        }
+
 
         //- Return the turbulence kinetic energy dissipation rate
         virtual tmp<volScalarField> epsilon() const
         {
-            return epsilon_;
+            return tmp<volScalarField>
+            (
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        "epsilon",
+                        this->mesh_.time().timeName(),
+                        this->mesh_
+                    ),
+                    Cmu_*k_*omega_,
+                    omega_.boundaryField().types()
+                )
+            );
         }
 
         //- Return the unresolved turbulence kinetic energy dissipation rate
         virtual tmp<volScalarField> epsilonU() const
         {
-            return epsilonU_;
+            return tmp<volScalarField>
+            (
+                new volScalarField
+                (
+                    IOobject
+                    (
+                        "epsilonU",
+                        this->mesh_.time().timeName(),
+                        this->mesh_
+                    ),
+                    Cmu_*kU_*omegaU_,
+                    omega_.boundaryField().types()
+                )
+            );
         }
 
         //- Solve the turbulence equations and correct the turbulence viscosity
@@ -233,9 +243,8 @@ public:
 } // End namespace Foam
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
-
 #ifdef NoRepository
-    #include "kEpsilonPANSdyn.C"
+    #include "kOmegaPANSLR.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //

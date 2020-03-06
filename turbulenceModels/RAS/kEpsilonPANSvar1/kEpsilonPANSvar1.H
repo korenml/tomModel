@@ -22,7 +22,7 @@ License
     along with OpenFOAM.  If not, see <http://www.gnu.org/licenses/>.
 
 Class
-    Foam::RASModels::kEpsilonPANSdyn
+    Foam::RASModels::kEpsilonPANSvar1
 
 Description
     PANS k-epsilon turbulence model for incompressible and compressible
@@ -48,7 +48,7 @@ Description
 
     The default model coefficients are
     \verbatim
-        kEpsilonPANSdynCoeffs
+        kEpsilonPANSvar1Coeffs
         {
             Cmu         0.09;
             C1          1.44;
@@ -60,12 +60,12 @@ Description
     \endverbatim
 
 SourceFiles
-    kEpsilonPANSdyn.C
+    kEpsilonPANSvar1.C
 
 \*---------------------------------------------------------------------------*/
 
-#ifndef kEpsilonPANSdyn_H
-#define kEpsilonPANSdyn_H
+#ifndef kEpsilonPANSvar1_H
+#define kEpsilonPANSvar1_H
 
 #include "RASModel.H"
 #include "eddyViscosity.H"
@@ -78,19 +78,19 @@ namespace RASModels
 {
 
 /*---------------------------------------------------------------------------*\
-                           Class kEpsilonPANSdyn Declaration
+                           Class kEpsilonPANSvar1 Declaration
 \*---------------------------------------------------------------------------*/
 
 template<class BasicTurbulenceModel>
-class kEpsilonPANSdyn
+class kEpsilonPANSvar1
 :
     public eddyViscosity<RASModel<BasicTurbulenceModel>>
 {
     // Private Member Functions
 
         // Disallow default bitwise copy construct and assignment
-        kEpsilonPANSdyn(const kEpsilonPANSdyn&);
-        void operator=(const kEpsilonPANSdyn&);
+        kEpsilonPANSvar1(const kEpsilonPANSvar1&);
+        void operator=(const kEpsilonPANSvar1&);
 
 
 protected:
@@ -136,13 +136,13 @@ public:
 
 
     //- Runtime type information
-    TypeName("kEpsilonPANSdyn");
+    TypeName("kEpsilonPANSvar1");
 
 
     // Constructors
 
         //- Construct from components
-        kEpsilonPANSdyn
+        kEpsilonPANSvar1
         (
             const alphaField& alpha,
             const rhoField& rho,
@@ -156,7 +156,7 @@ public:
 
 
     //- Destructor
-    virtual ~kEpsilonPANSdyn()
+    virtual ~kEpsilonPANSvar1()
     {}
 
 
@@ -235,7 +235,7 @@ public:
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
 
 #ifdef NoRepository
-    #include "kEpsilonPANSdyn.C"
+    #include "kEpsilonPANSvar1.C"
 #endif
 
 // * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
