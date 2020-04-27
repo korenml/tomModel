@@ -95,6 +95,8 @@ protected:
             dimensionedScalar alphaD_;
 
 			dimensionedScalar fEpsilon_;
+			dimensionedScalar lowLim_;
+			dimensionedScalar highLim_;
 
             autoPtr<Foam::LESdelta> delta_;
 

@@ -137,6 +137,24 @@ kOmegaTNTPANSdyn<BasicTurbulenceModel>::kOmegaTNTPANSdyn
             1.0
         )
     ),
+	lowLim_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "lowLim",
+            this->coeffDict_,
+            0.05
+        )
+    ),
+	highLim_
+    (
+        dimensioned<scalar>::lookupOrAddToDict
+        (
+            "highLim",
+            this->coeffDict_,
+            1.0
+        )
+    ),
     delta_
     (
         LESdelta::New
@@ -157,7 +175,7 @@ kOmegaTNTPANSdyn<BasicTurbulenceModel>::kOmegaTNTPANSdyn
             IOobject::AUTO_WRITE
         ),
         this->mesh_,
-        dimensionedScalar("zero", 0.25)
+        dimensionedScalar("lowLim", lowLim_)
     ),
     fOmega_
     (
@@ -251,6 +269,8 @@ bool kOmegaTNTPANSdyn<BasicTurbulenceModel>::read()
         alphaOmega_.readIfPresent(this->coeffDict());
         alphaD_.readIfPresent(this->coeffDict());
 		fEpsilon_.readIfPresent(this->coeffDict());
+		lowLim_.readIfPresent(this->coeffDict());
+		highLim_.readIfPresent(this->coeffDict());
 
         return true;
     }
@@ -358,8 +378,8 @@ void kOmegaTNTPANSdyn<BasicTurbulenceModel>::correct()
 	//dynamic fk_
 	fk_.primitiveFieldRef() = min
 	(
-							max((1.0/(sqrt(Cmu_))*pow(delta()/Lt,2.0/3.0)),0.0),
-							1.0
+							max((1.0/(sqrt(Cmu_))*pow(delta()/Lt,2.0/3.0)), lowLim_),
+							highLim_
 	);
 	fOmega_ = fEpsilon_/fk_;
 }
