@@ -23,7 +23,7 @@ License
 
 \*---------------------------------------------------------------------------*/
 
-#include "kEpsilonPANSvar1.H"
+#include "kEpsilonPANSSSV.H"
 #include "fvOptions.H"
 #include "bound.H"
 
@@ -37,7 +37,7 @@ namespace RASModels
 // * * * * * * * * * * * * Protected Member Functions  * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-void kEpsilonPANSvar1<BasicTurbulenceModel>::correctNut()
+void kEpsilonPANSSSV<BasicTurbulenceModel>::correctNut()
 {
     this->nut_ = Cmu_*sqr(kU_)/epsilonU_;
     this->nut_.correctBoundaryConditions();
@@ -48,7 +48,7 @@ void kEpsilonPANSvar1<BasicTurbulenceModel>::correctNut()
 
 
 template<class BasicTurbulenceModel>
-tmp<fvScalarMatrix> kEpsilonPANSvar1<BasicTurbulenceModel>::kSource() const
+tmp<fvScalarMatrix> kEpsilonPANSSSV<BasicTurbulenceModel>::kSource() const
 {
     return tmp<fvScalarMatrix>
     (
@@ -63,7 +63,7 @@ tmp<fvScalarMatrix> kEpsilonPANSvar1<BasicTurbulenceModel>::kSource() const
 
 
 template<class BasicTurbulenceModel>
-tmp<fvScalarMatrix> kEpsilonPANSvar1<BasicTurbulenceModel>::epsilonSource() const
+tmp<fvScalarMatrix> kEpsilonPANSSSV<BasicTurbulenceModel>::epsilonSource() const
 {
     return tmp<fvScalarMatrix>
     (
@@ -80,7 +80,7 @@ tmp<fvScalarMatrix> kEpsilonPANSvar1<BasicTurbulenceModel>::epsilonSource() cons
 // * * * * * * * * * * * * * * * * Constructors  * * * * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-kEpsilonPANSvar1<BasicTurbulenceModel>::kEpsilonPANSvar1
+kEpsilonPANSSSV<BasicTurbulenceModel>::kEpsilonPANSSSV
 (
     const alphaField& alpha,
     const rhoField& rho,
@@ -230,6 +230,20 @@ kEpsilonPANSvar1<BasicTurbulenceModel>::kEpsilonPANSvar1
 		k_.boundaryField().types()
     ),
 
+    kSSV_
+    (
+        IOobject
+        (
+            IOobject::groupName("kSSV", alphaRhoPhi.group()),
+            this->runTime_.timeName(),
+            this->mesh_,
+            IOobject::NO_READ,
+            IOobject::AUTO_WRITE
+        ),
+        k_*(1.0-fk_),
+		k_.boundaryField().types()
+    ),
+
     C2U_
     (
         IOobject
@@ -275,6 +289,7 @@ kEpsilonPANSvar1<BasicTurbulenceModel>::kEpsilonPANSvar1
 
 
     bound(kU_, min(fk_)*this->kMin_);
+    bound(kSSV_, (1.0-min(fk_))*this->kMin_);
     bound(epsilonU_, fEpsilon_*this->epsilonMin_);
 
     if (type == typeName)
@@ -287,7 +302,7 @@ kEpsilonPANSvar1<BasicTurbulenceModel>::kEpsilonPANSvar1
 // * * * * * * * * * * * * * * * Member Functions  * * * * * * * * * * * * * //
 
 template<class BasicTurbulenceModel>
-bool kEpsilonPANSvar1<BasicTurbulenceModel>::read()
+bool kEpsilonPANSSSV<BasicTurbulenceModel>::read()
 {
     if (eddyViscosity<RASModel<BasicTurbulenceModel>>::read())
     {
@@ -310,7 +325,7 @@ bool kEpsilonPANSvar1<BasicTurbulenceModel>::read()
 
 
 template<class BasicTurbulenceModel>
-void kEpsilonPANSvar1<BasicTurbulenceModel>::correct()
+void kEpsilonPANSSSV<BasicTurbulenceModel>::correct()
 {
     if (!this->turbulence_)
     {
@@ -342,6 +357,11 @@ void kEpsilonPANSvar1<BasicTurbulenceModel>::correct()
     );
     tgradU.clear();
 
+	volScalarField::Internal fp_
+	(
+		((1.0-epsilonU_/G)/fk_+epsilonU_/(fEpsilon_*G))
+	);
+
     // Update epsilonU and G at the wall
     epsilonU_.boundaryFieldRef().updateCoeffs();
 
@@ -367,7 +387,7 @@ void kEpsilonPANSvar1<BasicTurbulenceModel>::correct()
     fvOptions.correct(epsilonU_);
     bound(epsilonU_, fEpsilon_*this->epsilonMin_);
 
-    // Turbulent kinetic energy equation
+    // Unresolved turbulent kinetic energy equation
     tmp<fvScalarMatrix> kUEqn
     (
         fvm::ddt(alpha, rho, kU_)
@@ -387,7 +407,28 @@ void kEpsilonPANSvar1<BasicTurbulenceModel>::correct()
     fvOptions.correct(kU_);
     bound(kU_, min(fk_)*this->kMin_);
 
-	this->k_ = kU_/fk_;
+    // scale supplying turbulent kinetic energy equation
+    tmp<fvScalarMatrix> kSSVEqn
+    (
+        fvm::ddt(alpha, rho, kSSV_)
+      + fvm::div(alphaRhoPhi, kSSV_)
+      - fvm::laplacian(alpha*rho*DkEff(), kSSV_)
+     ==
+        fp_*alpha()*rho()*G
+	  -	fk_*fp_*alpha()*rho()*G
+      - fvm::SuSp((2.0/3.0)*alpha()*rho()*divU, kSSV_)
+      - fvm::Sp(1.0*alpha()*rho()*epsilonU_()/(fEpsilon_*kSSV_()), kSSV_)
+	  +	fvm::Sp(fk_*alpha()*rho()*epsilonU_()/(fEpsilon_*kSSV_()), kSSV_)
+      + fvOptions(alpha, rho, kSSV_)
+    );
+
+    kSSVEqn.ref().relax();
+    fvOptions.constrain(kSSVEqn.ref());
+    solve(kSSVEqn);
+    fvOptions.correct(kSSV_);
+    bound(kSSV_, (1.0-min(fk_))*this->kMin_);
+
+	this->k_ = kU_ + kSSV_;
 	this->k_.correctBoundaryConditions();
 
 	this->epsilon_ = epsilonU_/fEpsilon_;
@@ -396,14 +437,12 @@ void kEpsilonPANSvar1<BasicTurbulenceModel>::correct()
     correctNut();
 
 
-	volScalarField lt(pow(k_,1.5)/(epsilon_));
-	volScalarField eta(pow025(pow3(this->nu())/(epsilon_ + this->epsilonMin_)));
-
+	volScalarField Lt(pow(k_,1.5)/(epsilon_));
 
 	//dynamic fk_
 	fk_.primitiveFieldRef() = min
 	(
-							max(pow(delta()/max(lt,eta),2.0/3.0), fkLow_),
+							max((1.0/(sqrt(Cmu_))*pow(delta()/Lt,2.0/3.0)), fkLow_),
 							1.0
 	);
 

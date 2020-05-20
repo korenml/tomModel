@@ -99,6 +99,9 @@ makeRASModel(kOmegaTNTPANSdyn);
 #include "kOmegaTNTPANSSSV.H"
 makeRASModel(kOmegaTNTPANSSSV);
 
+#include "kEpsilonPANSSSV.H"
+makeRASModel(kEpsilonPANSSSV);
+
 #include "zetaf0VarTL.H"
 makeRASModel(zetaf0VarTL);
 

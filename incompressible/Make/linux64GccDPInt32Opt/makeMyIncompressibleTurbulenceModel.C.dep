@@ -19,6 +19,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/LESModel.H \
 ../turbulenceModels/RAS/kOmegaTNTPANS/kOmegaTNTPANS.H \
 ../turbulenceModels/RAS/kOmegaTNTPANSdyn/kOmegaTNTPANSdyn.H \
 ../turbulenceModels/RAS/kOmegaTNTPANSSSV/kOmegaTNTPANSSSV.H \
+../turbulenceModels/RAS/kEpsilonPANSSSV/kEpsilonPANSSSV.H \
 ../turbulenceModels/RAS/zetaf0VarTL/zetaf0VarTL.H \
 $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/TurbulenceModel.H \
 $(WM_PROJECT_DIR)/src/TurbulenceModels/incompressible/lnInclude/incompressibleTurbulenceModel.H \
@@ -44,6 +45,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/eddyViscosity.
 ../turbulenceModels/RAS/kOmegaTNTPANS/kOmegaTNTPANS.C \
 ../turbulenceModels/RAS/kOmegaTNTPANSdyn/kOmegaTNTPANSdyn.C \
 ../turbulenceModels/RAS/kOmegaTNTPANSSSV/kOmegaTNTPANSSSV.C \
+../turbulenceModels/RAS/kEpsilonPANSSSV/kEpsilonPANSSSV.C \
 ../turbulenceModels/RAS/zetaf0VarTL/zetaf0VarTLBase.H \
 ../turbulenceModels/RAS/zetaf0VarTL/zetaf0VarTL.C \
 $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/turbulenceModel.H \
@@ -757,6 +759,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/LESModel.H :
 ../turbulenceModels/RAS/kOmegaTNTPANS/kOmegaTNTPANS.H :
 ../turbulenceModels/RAS/kOmegaTNTPANSdyn/kOmegaTNTPANSdyn.H :
 ../turbulenceModels/RAS/kOmegaTNTPANSSSV/kOmegaTNTPANSSSV.H :
+../turbulenceModels/RAS/kEpsilonPANSSSV/kEpsilonPANSSSV.H :
 ../turbulenceModels/RAS/zetaf0VarTL/zetaf0VarTL.H :
 $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/TurbulenceModel.H :
 $(WM_PROJECT_DIR)/src/TurbulenceModels/incompressible/lnInclude/incompressibleTurbulenceModel.H :
@@ -782,6 +785,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/eddyViscosity.
 ../turbulenceModels/RAS/kOmegaTNTPANS/kOmegaTNTPANS.C :
 ../turbulenceModels/RAS/kOmegaTNTPANSdyn/kOmegaTNTPANSdyn.C :
 ../turbulenceModels/RAS/kOmegaTNTPANSSSV/kOmegaTNTPANSSSV.C :
+../turbulenceModels/RAS/kEpsilonPANSSSV/kEpsilonPANSSSV.C :
 ../turbulenceModels/RAS/zetaf0VarTL/zetaf0VarTLBase.H :
 ../turbulenceModels/RAS/zetaf0VarTL/zetaf0VarTL.C :
 $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/turbulenceModel.H :

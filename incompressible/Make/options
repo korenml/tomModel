@@ -11,6 +11,7 @@ EXE_INC = \
 	-I../turbulenceModels/RAS/kOmegaTNTPANS \
 	-I../turbulenceModels/RAS/kOmegaTNTPANSdyn \
 	-I../turbulenceModels/RAS/kOmegaTNTPANSSSV \
+	-I../turbulenceModels/RAS/kEpsilonPANSSSV \
 	-I../turbulenceModels/RAS/zetaf0VarTL \
     -I$(LIB_SRC)/transportModels \
     -I$(LIB_SRC)/finiteVolume/lnInclude \
