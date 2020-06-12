@@ -68,6 +68,9 @@ makeRASModel(kEpsilonPANSHR);
 #include "kEpsilonPANSLR.H"
 makeRASModel(kEpsilonPANSLR);
 
+#include "kEpsilonPANSLRN.H"
+makeRASModel(kEpsilonPANSLRN);
+
 #include "kEpsilonPANSdyn.H"
 makeRASModel(kEpsilonPANSdyn);
 
