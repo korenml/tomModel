@@ -146,7 +146,7 @@ kEpsilonPANSLRN<BasicTurbulenceModel>::kEpsilonPANSLRN
         (
             "C1",
             this->coeffDict_,
-            1.44
+            1.5
         )
     ),
     C2_
@@ -155,7 +155,7 @@ kEpsilonPANSLRN<BasicTurbulenceModel>::kEpsilonPANSLRN
         (
             "C2",
             this->coeffDict_,
-            1.92
+            1.9
         )
     ),
     C3_
@@ -174,7 +174,7 @@ kEpsilonPANSLRN<BasicTurbulenceModel>::kEpsilonPANSLRN
         (
             "sigmak",
             this->coeffDict_,
-            1.0
+            1.4
         )
     ),
     sigmaEps_
@@ -183,7 +183,7 @@ kEpsilonPANSLRN<BasicTurbulenceModel>::kEpsilonPANSLRN
         (
             "sigmaEps",
             this->coeffDict_,
-            1.3
+            1.4
         )
     ),
 

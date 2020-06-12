@@ -31,13 +31,10 @@ Description
     Reference:
     \verbatim
         Standard model:
-            Launder, B. E., & Spalding, D. B. (1972).
-            Lectures in mathematical models of turbulence.
-
-            Launder, B. E., & Spalding, D. B. (1974).
-            The numerical computation of turbulent flows.
-            Computer methods in applied mechanics and engineering,
-            3(2), 269-289.
+            Ma, J. M., & Peng, S.-BH. & Davidson, L. & Wang, F.J. (2011).
+            A low Reynolds number variant of partially-averaged Navier-Stokes 
+			model for turbulence.
+            International Journal of Heat and Fluid Flow,Vol 32 652-669.
 
 			Girimaji, S. S. (2006).
             Partially-averaged Navier-Stokes method for turbulence: A Reynolds
@@ -51,11 +48,10 @@ Description
         kEpsilonPANSLRNCoeffs
         {
             Cmu         0.09;
-            C1          1.44;
-            C2          1.92;
-            C3          -0.33;
-            sigmak      1.0;
-            sigmaEps    1.3;
+            C1          1.5;
+            C2          1.9;
+            sigmak      1.4;
+            sigmaEps    1.4;
         }
     \endverbatim
 
