@@ -26,7 +26,7 @@ Class
 
 Description
     Standard high Reynolds-number k-omega turbulence model for
-    incompressible and compressible flows.
+    incompressible and compressible flows in PANS form.
 
     References:
     \verbatim
@@ -37,6 +37,10 @@ Description
 		Kok, J. C. (1999).
 		Resolving the dependence on free-stream values for the k-omega turbulence model
 		National Aerospace Laboratory NLR Report.
+
+		Pereira, F. S. (2019).
+        Investigating the Effect of the Closure in Partially-Averaged Navier-Stokes Equations
+        (Vol. 141). Journal of Fluids Engineering. DOI: 10.1115/1.4043539
     \endverbatim
 
     The default model coefficients are

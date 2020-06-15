@@ -26,7 +26,7 @@ Class
 
 Description
     PANS k-epsilon turbulence model for incompressible and compressible
-    flows including rapid distortion theory (RDT) based compression term.
+    flows.
 
     Reference:
     \verbatim

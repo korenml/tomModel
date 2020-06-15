@@ -25,8 +25,8 @@ Class
     Foam::RASModels::kEpsilonPANSLRN
 
 Description
-    PANS k-epsilon turbulence model for incompressible and compressible
-    flows including rapid distortion theory (RDT) based compression term.
+    PANS k-epsilon Low Reynolds Number turbulence model for incompressible and compressible
+    flows.
 
     Reference:
     \verbatim

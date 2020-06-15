@@ -34,6 +34,11 @@ Description
         Turbulence modeling for CFD
         (Vol. 2, pp. 103-217). La Canada, CA: DCW industries.
 
+
+		Lakshmipathy, S. & Girimaji, S. S. (2006).
+        Partially-averaged Navier-Stokes moethod for turbulent flows: k-w model iplementation.
+        (Vol. 3). AIAA. DOI: 10.2514/6.2006-119
+	
 		
     \endverbatim
 
