@@ -1,6 +1,7 @@
 EXE_INC = \
 	-I../turbulenceModels/RAS/kEpsilonPANSHR \
 	-I../turbulenceModels/RAS/kEpsilonPANSLR \
+	-I../turbulenceModels/RAS/kEpsilonLRN \
 	-I../turbulenceModels/RAS/kEpsilonPANSLRN \
 	-I../turbulenceModels/RAS/kEpsilonPANSdyn \
 	-I../turbulenceModels/RAS/kEpsilonPANSvar1 \

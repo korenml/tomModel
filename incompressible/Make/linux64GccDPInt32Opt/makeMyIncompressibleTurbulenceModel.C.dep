@@ -10,6 +10,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/LESModel.H \
 ../turbulenceModels/RAS/kEpsilonPANSHR/kEpsilonPANSHR.H \
 ../turbulenceModels/RAS/kEpsilonPANSLR/kEpsilonPANSLR.H \
 ../turbulenceModels/RAS/kEpsilonPANSLRN/kEpsilonPANSLRN.H \
+../turbulenceModels/RAS/kEpsilonLRN/kEpsilonLRN.H \
 ../turbulenceModels/RAS/kEpsilonPANSdyn/kEpsilonPANSdyn.H \
 ../turbulenceModels/RAS/kEpsilonPANSvar1/kEpsilonPANSvar1.H \
 ../turbulenceModels/RAS/kOmegaPANS/kOmegaPANS.H \
@@ -37,6 +38,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/eddyViscosity.
 ../turbulenceModels/RAS/kEpsilonPANSHR/kEpsilonPANSHR.C \
 ../turbulenceModels/RAS/kEpsilonPANSLR/kEpsilonPANSLR.C \
 ../turbulenceModels/RAS/kEpsilonPANSLRN/kEpsilonPANSLRN.C \
+../turbulenceModels/RAS/kEpsilonLRN/kEpsilonLRN.C \
 ../turbulenceModels/RAS/kEpsilonPANSdyn/kEpsilonPANSdyn.C \
 ../turbulenceModels/RAS/kEpsilonPANSvar1/kEpsilonPANSvar1.C \
 ../turbulenceModels/RAS/kOmegaPANS/kOmegaPANS.C \
@@ -766,6 +768,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/LESModel.H :
 ../turbulenceModels/RAS/kEpsilonPANSHR/kEpsilonPANSHR.H :
 ../turbulenceModels/RAS/kEpsilonPANSLR/kEpsilonPANSLR.H :
 ../turbulenceModels/RAS/kEpsilonPANSLRN/kEpsilonPANSLRN.H :
+../turbulenceModels/RAS/kEpsilonLRN/kEpsilonLRN.H :
 ../turbulenceModels/RAS/kEpsilonPANSdyn/kEpsilonPANSdyn.H :
 ../turbulenceModels/RAS/kEpsilonPANSvar1/kEpsilonPANSvar1.H :
 ../turbulenceModels/RAS/kOmegaPANS/kOmegaPANS.H :
@@ -793,6 +796,7 @@ $(WM_PROJECT_DIR)/src/TurbulenceModels/turbulenceModels/lnInclude/eddyViscosity.
 ../turbulenceModels/RAS/kEpsilonPANSHR/kEpsilonPANSHR.C :
 ../turbulenceModels/RAS/kEpsilonPANSLR/kEpsilonPANSLR.C :
 ../turbulenceModels/RAS/kEpsilonPANSLRN/kEpsilonPANSLRN.C :
+../turbulenceModels/RAS/kEpsilonLRN/kEpsilonLRN.C :
 ../turbulenceModels/RAS/kEpsilonPANSdyn/kEpsilonPANSdyn.C :
 ../turbulenceModels/RAS/kEpsilonPANSvar1/kEpsilonPANSvar1.C :
 ../turbulenceModels/RAS/kOmegaPANS/kOmegaPANS.C :
