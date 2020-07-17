@@ -171,7 +171,7 @@ kOmegaTNTPANSdyn<BasicTurbulenceModel>::kOmegaTNTPANSdyn
             IOobject::groupName("fk", alphaRhoPhi.group()),
             this->runTime_.timeName(),
             this->mesh_,
-            IOobject::NO_READ,
+            IOobject::READ_IF_PRESENT,
             IOobject::AUTO_WRITE
         ),
         this->mesh_,
